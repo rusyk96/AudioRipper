@@ -61,24 +61,23 @@ final class UpdateDownloader: NSObject, URLSessionDownloadDelegate {
             }
         }
     }
+    
+    
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         guard totalBytesExpectedToWrite > 0 else { return }
         let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        let percentage = Int(progress * 100)
+        
+        // Логируем каждые 20% прогресса, чтобы не засорять лог-файл каждой миллисекундой
+        if percentage % 20 == 0 {
+            let downloadedMB = Double(totalBytesWritten) / (1024 * 1024)
+            let totalMB = Double(totalBytesExpectedToWrite) / (1024 * 1024)
+            Self.logger.log("📥 UpdateDownloader: скачано \(String(format: "%.1f", downloadedMB)) МБ из \(String(format: "%.1f", totalMB)) МБ (\(percentage)%)")
+        }
         
         Task { @MainActor in
             self.onProgressUpdate?(progress)
-        }
-    }
-
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        if let error = error {
-            Self.logger.log("❌ UpdateDownloader ошибка сессии: \(error.localizedDescription)")
-            Task { @MainActor in
-                self.onCompletion?(.failure(error))
-                self.continuation?.resume(throwing: error)
-                self.continuation = nil
-            }
         }
     }
 }
