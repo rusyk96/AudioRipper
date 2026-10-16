@@ -10,7 +10,6 @@ import Foundation
 @Observable
 final class UpdateManager: NSObject, URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        <#code#>
     }
     
     private static let logger = SessionLogger.shared
