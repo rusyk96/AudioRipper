@@ -10,9 +10,33 @@
 		454658C2308177A900A7F2D1 /* AudioRipperR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioRipperR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		454659353082DD0900A7F2D1 /* Exceptions for "AudioRipperR" folder in "AudioRipperR" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"version JSON/version.json",
+			);
+			target = 454658C1308177A900A7F2D1 /* AudioRipperR */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		454659363082DD0900A7F2D1 /* Exceptions for "AudioRipperR" folder in "Compile Sources" phase from "AudioRipperR" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 454658BE308177A900A7F2D1 /* Sources */;
+			membershipExceptions = (
+				"version JSON/version.json",
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		454658C4308177A900A7F2D1 /* AudioRipperR */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				454659353082DD0900A7F2D1 /* Exceptions for "AudioRipperR" folder in "AudioRipperR" target */,
+				454659363082DD0900A7F2D1 /* Exceptions for "AudioRipperR" folder in "Compile Sources" phase from "AudioRipperR" target */,
+			);
 			path = AudioRipperR;
 			sourceTree = "<group>";
 		};
