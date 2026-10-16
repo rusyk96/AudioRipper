@@ -1,0 +1,7 @@
+//
+//  UpdateManager.swift
+//  AudioRipperR
+//
+//  Created by Руслан on 10/17/26.
+//
+
