@@ -8,40 +8,51 @@
 import Foundation
 
 @Observable
-final class UpdateManager: NSObject, URLSessionDownloadDelegate {
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-    }
+final class UpdateManager {
+    static let shared = UpdateManager()
     
-    private static let logger = SessionLogger.shared
-    
+    var showUpdateAlert = false
     var isDownloading = false
     var downloadProgress: Double = 0.0
-    var downloadedFileLocalURL: URL?
-    var errorMessage: String?
+    var statusMessage: String = ""
+    var updateInfo: AppVersionInfo?
     
-    private var continuation: CheckedContinuation<URL, Error>?
+    private let downloader = UpdateDownloader()
     
-    func downloadUpdate(from urlString: String) async throws -> URL {
-        guard let url = URL(string: urlString) else {
-            throw NSError(domain: "UpdateManager", code: 400, userInfo: [NSLocalizedDescriptionKey: "Неверный URL для скачивания обновления"])
+    @MainActor
+    func checkForUpdates() async {
+        statusMessage = "Проверка обновлений..."
+        if let info = await UpdateChecker.checkForUpdates() {
+            self.updateInfo = info
+            self.showUpdateAlert = true
+            self.statusMessage = "Доступна версия \(info.latestVersion)"
+        } else {
+            self.statusMessage = "У вас установлена последняя версия"
+        }
+    }
+    
+    @MainActor
+    func startUpdate() async {
+        guard let info = updateInfo else { return }
+        
+        isDownloading = true
+        statusMessage = "Скачивание обновления..."
+        
+        downloader.onProgressUpdate = { [weak self] progress in
+            let percentage = Int(progress * 100)
+            self?.downloadProgress = progress
+            self?.statusMessage = "Загрузка: \(percentage)%"
         }
         
-        Self.logger.log("📥 UpdateManager: старт загрузки обновления...")
-        
-        await MainActor.run {
-            self.isDownloading = true
-            self.downloadProgress = 0.0
-            self.errorMessage = nil
-        }
-        
-        let configuration = URLSessionConfiguration.default
-        let session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
-        
-        return try await withCheckedThrowingContinuation { continuation in
-            self.continuation = continuation
-            let task = session.downloadTask(with: url)
-            task.resume()
+        do {
+            let zipURL = try await downloader.download(from: info.updateUrl)
+            statusMessage = "Распаковка и установка..."
+            UpdateInstaller.applyUpdate(zipPath: zipURL)
+        } catch {
+            isDownloading = false
+            statusMessage = "Ошибка загрузки: \(error.localizedDescription)"
         }
     }
 }
+
     
